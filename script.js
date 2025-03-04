@@ -95,15 +95,15 @@ function initCart() {
   const overlay = document.getElementById("overlay");
   const checkoutBtn = document.getElementById("checkout-btn");
 
-  // Initialize cart from localStorage
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  // Update cart UI on page load
+  refreshCartUI();
 
-  // Check if we're on a page with cart elements
+  // Toggle cart drawer
   if (cartToggle && cartDrawer && overlay) {
-    updateCartUI(cart);
-
-    // Toggle cart drawer
     cartToggle.addEventListener("click", () => {
+      // Always refresh the cart UI before showing
+      refreshCartUI();
+
       cartDrawer.classList.toggle("translate-x-full");
       overlay.classList.toggle("opacity-0");
       overlay.classList.toggle("pointer-events-none");
@@ -124,38 +124,43 @@ function initCart() {
       overlay.classList.add("opacity-0");
       overlay.classList.add("pointer-events-none");
     });
-
-    // Add checkout button event listener
-    if (checkoutBtn) {
-      checkoutBtn.addEventListener("click", () => {
-        processCheckoutWithWhatsApp();
-      });
-    }
-  } else {
-    // Just update the cart count if we're on a page without the full cart
-    const cartCount = document.getElementById("cart-count");
-    if (cartCount) {
-      cartCount.textContent = cart.reduce(
-        (total, item) => total + item.quantity,
-        0
-      );
-    }
   }
 
-  // Add event listeners for add to cart buttons
+  // Add checkout button event listener
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener("click", processCheckoutWithWhatsApp);
+  }
+
+  // Use event delegation for cart item buttons
   document.addEventListener("click", (e) => {
+    // Add to cart button
     if (e.target.classList.contains("add-to-cart-btn")) {
       const productId = e.target.dataset.id;
       addToCart(productId);
+    }
+
+    // Decrease quantity button
+    if (e.target.closest(".cart-item-decrease")) {
+      const productId = e.target.closest(".cart-item-decrease").dataset.id;
+      updateCartItemQuantity(productId, -1);
+    }
+
+    // Increase quantity button
+    if (e.target.closest(".cart-item-increase")) {
+      const productId = e.target.closest(".cart-item-increase").dataset.id;
+      updateCartItemQuantity(productId, 1);
+    }
+
+    // Remove item button
+    if (e.target.closest(".cart-item-remove")) {
+      const productId = e.target.closest(".cart-item-remove").dataset.id;
+      removeFromCart(productId);
     }
   });
 }
 
 // Add to cart function
 function addToCart(productId) {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  // Fetch product details (replace with your actual data fetching logic)
   fetch("data.json")
     .then((response) => response.json())
     .then((data) => {
@@ -163,28 +168,176 @@ function addToCart(productId) {
         (p) => p.id === Number.parseInt(productId)
       );
 
-      if (product) {
-        const existingItem = cart.find((item) => item.id === product.id);
-
-        if (existingItem) {
-          existingItem.quantity += 1;
-        } else {
-          cart.push({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            quantity: 1,
-          });
-        }
-
-        localStorage.setItem("cart", JSON.stringify(cart));
-        updateCartUI(cart);
-      } else {
-        console.error("Product not found with ID:", productId);
+      if (!product) {
+        console.error("Product not found:", productId);
+        return;
       }
+
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const existingItem = cart.find((item) => item.id === product.id);
+
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.name,
+          price: product.sale
+            ? product.salePrice || product.price
+            : product.price,
+          image: product.image,
+          quantity: 1,
+        });
+      }
+
+      // Save to localStorage
+      localStorage.setItem("cart", JSON.stringify(cart));
+
+      // Update UI
+      refreshCartUI();
+
+      // Open cart drawer
+      openCartDrawer();
     })
-    .catch((error) => console.error("Error fetching product data:", error));
+    .catch((error) => {
+      console.error("Error adding to cart:", error);
+    });
+}
+
+// Update cart item quantity
+function updateCartItemQuantity(productId, change) {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const itemIndex = cart.findIndex(
+    (item) => item.id === Number.parseInt(productId)
+  );
+
+  if (itemIndex !== -1) {
+    cart[itemIndex].quantity += change;
+
+    if (cart[itemIndex].quantity <= 0) {
+      cart.splice(itemIndex, 1);
+    }
+
+    // Save to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Update UI
+    refreshCartUI();
+  }
+}
+
+// Remove item from cart
+function removeFromCart(productId) {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const itemIndex = cart.findIndex(
+    (item) => item.id === Number.parseInt(productId)
+  );
+
+  if (itemIndex !== -1) {
+    cart.splice(itemIndex, 1);
+
+    // Save to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Update UI
+    refreshCartUI();
+  }
+}
+
+// Helper function to open cart drawer
+function openCartDrawer() {
+  const cartDrawer = document.getElementById("cart-drawer");
+  const overlay = document.getElementById("overlay");
+
+  if (cartDrawer && overlay) {
+    cartDrawer.classList.remove("translate-x-full");
+    overlay.classList.remove("opacity-0");
+    overlay.classList.remove("pointer-events-none");
+  }
+}
+
+// Helper function to refresh cart UI
+function refreshCartUI() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  updateCartUI(cart);
+}
+
+// Update cart UI
+function updateCartUI(cart) {
+  const cartCount = document.getElementById("cart-count");
+  const cartItemsContainer = document.getElementById("cart-items");
+  const cartTotal = document.getElementById("cart-total");
+  const emptyCartMessage = document.getElementById("empty-cart-message");
+  const checkoutBtn = document.getElementById("checkout-btn");
+
+  // Update cart count on all pages
+  if (cartCount) {
+    const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+    cartCount.textContent = totalItems.toString();
+  }
+
+  // If we're not on a page with the full cart drawer, return early
+  if (!cartItemsContainer || !cartTotal || !emptyCartMessage || !checkoutBtn) {
+    return;
+  }
+
+  // Update cart items
+  if (cart.length === 0) {
+    emptyCartMessage.classList.remove("hidden");
+    checkoutBtn.disabled = true;
+    cartItemsContainer.innerHTML = "";
+  } else {
+    emptyCartMessage.classList.add("hidden");
+    checkoutBtn.disabled = false;
+
+    // Calculate total
+    const total = cart.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    cartTotal.textContent = `$${total.toFixed(2)}`;
+
+    // Clear existing cart items
+    cartItemsContainer.innerHTML = "";
+
+    // Render cart items
+    cart.forEach((item) => {
+      const cartItem = document.createElement("div");
+      cartItem.className = "cart-item flex items-center gap-4 py-3 border-b";
+      cartItem.innerHTML = `
+          <img src="${
+            item.image || "/placeholder.svg?height=60&width=60"
+          }" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+          <div class="flex-grow">
+            <h4 class="font-bold">${item.name}</h4>
+            <div class="flex items-center mt-1">
+              <button class="cart-item-decrease text-gray-500 hover:text-accent" data-id="${
+                item.id
+              }">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span class="mx-2">${item.quantity}</span>
+              <button class="cart-item-increase text-gray-500 hover:text-accent" data-id="${
+                item.id
+              }">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold">$${(item.price * item.quantity).toFixed(
+              2
+            )}</div>
+            <button class="cart-item-remove text-gray-500 hover:text-red-500 mt-1" data-id="${
+              item.id
+            }">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+      cartItemsContainer.appendChild(cartItem);
+    });
+  }
 }
 
 // Process checkout with WhatsApp
@@ -224,145 +377,13 @@ function processCheckoutWithWhatsApp() {
   const encodedMessage = encodeURIComponent(message);
 
   // WhatsApp phone number - replace with your actual number
-  const phoneNumber = "212649455082"; // Replace with your WhatsApp number
+  const phoneNumber = "212600000000"; // Replace with your WhatsApp number
 
   // Create WhatsApp URL
   const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 
   // Open WhatsApp in a new tab
   window.open(whatsappURL, "_blank");
-}
-
-// Update cart UI
-function updateCartUI(cart) {
-  const cartItemsContainer = document.getElementById("cart-items");
-  const cartCount = document.getElementById("cart-count");
-  const cartTotal = document.getElementById("cart-total");
-  const emptyCartMessage = document.getElementById("empty-cart-message");
-  const checkoutBtn = document.getElementById("checkout-btn");
-
-  // Add null checks for all elements
-  if (
-    !cartItemsContainer ||
-    !cartCount ||
-    !cartTotal ||
-    !emptyCartMessage ||
-    !checkoutBtn
-  ) {
-    console.error("One or more cart elements not found in the DOM");
-    return;
-  }
-
-  // Update cart count
-  cartCount.textContent = cart.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
-
-  // Update cart items
-  if (cart.length === 0) {
-    emptyCartMessage.classList.remove("hidden");
-    checkoutBtn.disabled = true;
-  } else {
-    emptyCartMessage.classList.add("hidden");
-    checkoutBtn.disabled = false;
-
-    // Calculate total
-    const total = cart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    cartTotal.textContent = `$${total.toFixed(2)}`;
-
-    // Render cart items
-    cartItemsContainer.innerHTML = "";
-    cart.forEach((item) => {
-      const cartItem = document.createElement("div");
-      cartItem.className = "cart-item flex items-center gap-4 py-3 border-b";
-      cartItem.innerHTML = `
-                <img src="${
-                  item.image || "/placeholder.svg?height=60&width=60"
-                }" alt="${item.name}" class="w-16 h-16 object-cover rounded">
-                <div class="flex-grow">
-                    <h4 class="font-bold">${item.name}</h4>
-                    <div class="flex items-center mt-1">
-                        <button class="cart-item-decrease text-gray-500 hover:text-accent" data-id="${
-                          item.id
-                        }">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <span class="mx-2">${item.quantity}</span>
-                        <button class="cart-item-increase text-gray-500 hover:text-accent" data-id="${
-                          item.id
-                        }">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold">$${(
-                      item.price * item.quantity
-                    ).toFixed(2)}</div>
-                    <button class="cart-item-remove text-gray-500 hover:text-red-500 mt-1" data-id="${
-                      item.id
-                    }">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
-      cartItemsContainer.appendChild(cartItem);
-
-      // Add direct event listeners to the buttons
-      const decreaseBtn = cartItem.querySelector(".cart-item-decrease");
-      const increaseBtn = cartItem.querySelector(".cart-item-increase");
-      const removeBtn = cartItem.querySelector(".cart-item-remove");
-
-      decreaseBtn.addEventListener("click", () => {
-        updateCartItemQuantity(item.id, -1);
-      });
-
-      increaseBtn.addEventListener("click", () => {
-        updateCartItemQuantity(item.id, 1);
-      });
-
-      removeBtn.addEventListener("click", () => {
-        removeFromCart(item.id);
-      });
-    });
-  }
-}
-
-// Update cart item quantity
-function updateCartItemQuantity(productId, change) {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const itemIndex = cart.findIndex(
-    (item) => item.id === Number.parseInt(productId)
-  );
-
-  if (itemIndex !== -1) {
-    cart[itemIndex].quantity += change;
-
-    if (cart[itemIndex].quantity <= 0) {
-      cart.splice(itemIndex, 1);
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartUI(cart);
-  }
-}
-
-// Remove item from cart
-function removeFromCart(productId) {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const itemIndex = cart.findIndex(
-    (item) => item.id === Number.parseInt(productId)
-  );
-
-  if (itemIndex !== -1) {
-    cart.splice(itemIndex, 1);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartUI(cart);
-  }
 }
 
 // Mobile menu functionality

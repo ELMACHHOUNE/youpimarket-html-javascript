@@ -8,7 +8,7 @@
       "salePrice": 999.99,
       "sale": true,
       "featured": true,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A stunning dining table with a live edge walnut top and sculptural base. This piece combines natural beauty with artistic design for a truly unique dining experience.",
       "dimensions": {
         "length": 72,
