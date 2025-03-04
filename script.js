@@ -93,6 +93,7 @@ function initCart() {
   const closeCart = document.getElementById("close-cart");
   const cartDrawer = document.getElementById("cart-drawer");
   const overlay = document.getElementById("overlay");
+  const checkoutBtn = document.getElementById("checkout-btn");
 
   // Initialize cart from localStorage
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -123,6 +124,13 @@ function initCart() {
       overlay.classList.add("opacity-0");
       overlay.classList.add("pointer-events-none");
     });
+
+    // Add checkout button event listener
+    if (checkoutBtn) {
+      checkoutBtn.addEventListener("click", () => {
+        processCheckoutWithWhatsApp();
+      });
+    }
   } else {
     // Just update the cart count if we're on a page without the full cart
     const cartCount = document.getElementById("cart-count");
@@ -141,114 +149,88 @@ function initCart() {
       addToCart(productId);
     }
   });
-
-  // Add event listeners for cart item quantity changes
-  document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("cart-item-increase")) {
-      const productId = e.target.dataset.id;
-      updateCartItemQuantity(productId, 1);
-    } else if (e.target.classList.contains("cart-item-decrease")) {
-      const productId = e.target.dataset.id;
-      updateCartItemQuantity(productId, -1);
-    } else if (e.target.classList.contains("cart-item-remove")) {
-      const productId = e.target.dataset.id;
-      removeFromCart(productId);
-    }
-  });
 }
 
-// Add product to cart
-async function addToCart(productId) {
-  try {
-    const response = await fetch("data.json");
-    const data = await response.json();
-    const product = data.products.find(
-      (p) => p.id === Number.parseInt(productId)
-    );
+// Add to cart function
+function addToCart(productId) {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    if (!product) {
-      console.error("Product not found:", productId);
-      return;
-    }
+  // Fetch product details (replace with your actual data fetching logic)
+  fetch("data.json")
+    .then((response) => response.json())
+    .then((data) => {
+      const product = data.products.find(
+        (p) => p.id === Number.parseInt(productId)
+      );
 
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingItem = cart.find((item) => item.id === product.id);
+      if (product) {
+        const existingItem = cart.find((item) => item.id === product.id);
 
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        quantity: 1,
-      });
-    }
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1,
+          });
+        }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
-
-    // Check if we're on a page with cart elements before updating UI
-    const cartDrawer = document.getElementById("cart-drawer");
-    const overlay = document.getElementById("overlay");
-
-    if (cartDrawer && overlay) {
-      updateCartUI(cart);
-
-      // Show cart drawer
-      cartDrawer.classList.remove("translate-x-full");
-      overlay.classList.remove("opacity-0");
-      overlay.classList.remove("pointer-events-none");
-    } else {
-      // Just update the cart count if we're on a page without the full cart
-      const cartCount = document.getElementById("cart-count");
-      if (cartCount) {
-        cartCount.textContent = cart.reduce(
-          (total, item) => total + item.quantity,
-          0
-        );
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartUI(cart);
+      } else {
+        console.error("Product not found with ID:", productId);
       }
-    }
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-    // Show a user-friendly error message
-    alert(
-      "Sorry, there was an error adding this item to your cart. Please try again."
-    );
-  }
+    })
+    .catch((error) => console.error("Error fetching product data:", error));
 }
 
-// Update cart item quantity
-function updateCartItemQuantity(productId, change) {
+// Process checkout with WhatsApp
+function processCheckoutWithWhatsApp() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const itemIndex = cart.findIndex(
-    (item) => item.id === Number.parseInt(productId)
-  );
 
-  if (itemIndex !== -1) {
-    cart[itemIndex].quantity += change;
-
-    if (cart[itemIndex].quantity <= 0) {
-      cart.splice(itemIndex, 1);
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartUI(cart);
+  if (cart.length === 0) {
+    alert("Your cart is empty. Please add items before checking out.");
+    return;
   }
-}
 
-// Remove item from cart
-function removeFromCart(productId) {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const itemIndex = cart.findIndex(
-    (item) => item.id === Number.parseInt(productId)
+  // Calculate total
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
   );
+  const shippingCost = 30; // 30 DH shipping cost
+  const total = subtotal + shippingCost;
 
-  if (itemIndex !== -1) {
-    cart.splice(itemIndex, 1);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartUI(cart);
-  }
+  // Create message for WhatsApp
+  let message = "Hello, I would like to place an order for:\n\n";
+
+  // Add each item to the message
+  cart.forEach((item) => {
+    message += `${item.name} x${item.quantity} - ${(
+      item.price * item.quantity
+    ).toFixed(2)} DH\n`;
+  });
+
+  // Add subtotal, shipping, and total
+  message += `\nSubtotal: ${subtotal.toFixed(2)} DH`;
+  message += `\nShipping: ${shippingCost.toFixed(2)} DH`;
+  message += `\nTotal: ${total.toFixed(2)} DH`;
+  message += `\n\nPayment Method: Cash on Delivery (COD)`;
+
+  // Encode the message for URL
+  const encodedMessage = encodeURIComponent(message);
+
+  // WhatsApp phone number - replace with your actual number
+  const phoneNumber = "212649455082"; // Replace with your WhatsApp number
+
+  // Create WhatsApp URL
+  const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+  // Open WhatsApp in a new tab
+  window.open(whatsappURL, "_blank");
 }
 
 // Update cart UI
@@ -298,38 +280,88 @@ function updateCartUI(cart) {
       const cartItem = document.createElement("div");
       cartItem.className = "cart-item flex items-center gap-4 py-3 border-b";
       cartItem.innerHTML = `
-                  <img src="${
-                    item.image || "/placeholder.svg?height=60&width=60"
-                  }" alt="${item.name}" class="w-16 h-16 object-cover rounded">
-                  <div class="flex-grow">
-                      <h4 class="font-bold">${item.name}</h4>
-                      <div class="flex items-center mt-1">
-                          <button class="cart-item-decrease text-gray-500 hover:text-accent" data-id="${
-                            item.id
-                          }">
-                              <i class="fas fa-minus"></i>
-                          </button>
-                          <span class="mx-2">${item.quantity}</span>
-                          <button class="cart-item-increase text-gray-500 hover:text-accent" data-id="${
-                            item.id
-                          }">
-                              <i class="fas fa-plus"></i>
-                          </button>
-                      </div>
-                  </div>
-                  <div class="text-right">
-                      <div class="font-bold">$${(
-                        item.price * item.quantity
-                      ).toFixed(2)}</div>
-                      <button class="cart-item-remove text-gray-500 hover:text-red-500 mt-1" data-id="${
-                        item.id
-                      }">
-                          <i class="fas fa-trash"></i>
-                      </button>
-                  </div>
-              `;
+                <img src="${
+                  item.image || "/placeholder.svg?height=60&width=60"
+                }" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+                <div class="flex-grow">
+                    <h4 class="font-bold">${item.name}</h4>
+                    <div class="flex items-center mt-1">
+                        <button class="cart-item-decrease text-gray-500 hover:text-accent" data-id="${
+                          item.id
+                        }">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span class="mx-2">${item.quantity}</span>
+                        <button class="cart-item-increase text-gray-500 hover:text-accent" data-id="${
+                          item.id
+                        }">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="font-bold">$${(
+                      item.price * item.quantity
+                    ).toFixed(2)}</div>
+                    <button class="cart-item-remove text-gray-500 hover:text-red-500 mt-1" data-id="${
+                      item.id
+                    }">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
       cartItemsContainer.appendChild(cartItem);
+
+      // Add direct event listeners to the buttons
+      const decreaseBtn = cartItem.querySelector(".cart-item-decrease");
+      const increaseBtn = cartItem.querySelector(".cart-item-increase");
+      const removeBtn = cartItem.querySelector(".cart-item-remove");
+
+      decreaseBtn.addEventListener("click", () => {
+        updateCartItemQuantity(item.id, -1);
+      });
+
+      increaseBtn.addEventListener("click", () => {
+        updateCartItemQuantity(item.id, 1);
+      });
+
+      removeBtn.addEventListener("click", () => {
+        removeFromCart(item.id);
+      });
     });
+  }
+}
+
+// Update cart item quantity
+function updateCartItemQuantity(productId, change) {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const itemIndex = cart.findIndex(
+    (item) => item.id === Number.parseInt(productId)
+  );
+
+  if (itemIndex !== -1) {
+    cart[itemIndex].quantity += change;
+
+    if (cart[itemIndex].quantity <= 0) {
+      cart.splice(itemIndex, 1);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartUI(cart);
+  }
+}
+
+// Remove item from cart
+function removeFromCart(productId) {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const itemIndex = cart.findIndex(
+    (item) => item.id === Number.parseInt(productId)
+  );
+
+  if (itemIndex !== -1) {
+    cart.splice(itemIndex, 1);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartUI(cart);
   }
 }
 
