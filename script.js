@@ -1,4 +1,13 @@
+// Global cart state
+let globalCart = [];
+
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM fully loaded");
+
+  // Load cart from localStorage
+  globalCart = JSON.parse(localStorage.getItem("cart")) || [];
+  console.log("Initial cart:", globalCart);
+
   // Initialize the application
   initApp();
 });
@@ -89,78 +98,151 @@ function initTheme() {
 
 // Cart functionality
 function initCart() {
-  const cartToggle = document.getElementById("cart-toggle");
-  const closeCart = document.getElementById("close-cart");
-  const cartDrawer = document.getElementById("cart-drawer");
-  const overlay = document.getElementById("overlay");
-  const checkoutBtn = document.getElementById("checkout-btn");
+  console.log("Initializing cart");
 
-  // Update cart UI on page load
-  refreshCartUI();
+  // Add event listener for "Add to Cart" buttons
+  document.addEventListener("click", (event) => {
+    const target = event.target;
 
-  // Toggle cart drawer
-  if (cartToggle && cartDrawer && overlay) {
-    cartToggle.addEventListener("click", () => {
-      // Always refresh the cart UI before showing
-      refreshCartUI();
-
-      cartDrawer.classList.toggle("translate-x-full");
-      overlay.classList.toggle("opacity-0");
-      overlay.classList.toggle("pointer-events-none");
-    });
-
-    // Close cart drawer
-    if (closeCart) {
-      closeCart.addEventListener("click", () => {
-        cartDrawer.classList.add("translate-x-full");
-        overlay.classList.add("opacity-0");
-        overlay.classList.add("pointer-events-none");
-      });
-    }
-
-    // Close cart when clicking overlay
-    overlay.addEventListener("click", () => {
-      cartDrawer.classList.add("translate-x-full");
-      overlay.classList.add("opacity-0");
-      overlay.classList.add("pointer-events-none");
-    });
-  }
-
-  // Add checkout button event listener
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener("click", processCheckoutWithWhatsApp);
-  }
-
-  // Use event delegation for cart item buttons
-  document.addEventListener("click", (e) => {
-    // Add to cart button
-    if (e.target.classList.contains("add-to-cart-btn")) {
-      const productId = e.target.dataset.id;
+    // Handle "Add to Cart" button clicks
+    if (
+      target.classList.contains("add-to-cart-btn") ||
+      target.closest(".add-to-cart-btn")
+    ) {
+      const button = target.classList.contains("add-to-cart-btn")
+        ? target
+        : target.closest(".add-to-cart-btn");
+      const productId = button.dataset.id;
+      console.log("Add to cart clicked for product:", productId);
       addToCart(productId);
+      event.preventDefault();
     }
 
-    // Decrease quantity button
-    if (e.target.closest(".cart-item-decrease")) {
-      const productId = e.target.closest(".cart-item-decrease").dataset.id;
+    // Handle cart toggle button
+    if (target.closest("#cart-toggle")) {
+      console.log("Cart toggle clicked");
+      toggleCart();
+      event.preventDefault();
+    }
+
+    // Handle close cart button
+    if (target.closest("#close-cart")) {
+      console.log("Close cart clicked");
+      closeCart();
+      event.preventDefault();
+    }
+
+    // Handle cart overlay
+    if (target.id === "overlay") {
+      console.log("Overlay clicked");
+      closeCart();
+    }
+
+    // Handle checkout button
+    if (target.closest("#checkout-btn")) {
+      console.log("Checkout clicked");
+      processCheckoutWithWhatsApp();
+      event.preventDefault();
+    }
+
+    // Handle decrease quantity button
+    if (target.closest(".cart-item-decrease")) {
+      const button = target.closest(".cart-item-decrease");
+      const productId = button.dataset.id;
+      console.log("Decrease quantity for product:", productId);
       updateCartItemQuantity(productId, -1);
+      event.preventDefault();
     }
 
-    // Increase quantity button
-    if (e.target.closest(".cart-item-increase")) {
-      const productId = e.target.closest(".cart-item-increase").dataset.id;
+    // Handle increase quantity button
+    if (target.closest(".cart-item-increase")) {
+      const button = target.closest(".cart-item-increase");
+      const productId = button.dataset.id;
+      console.log("Increase quantity for product:", productId);
       updateCartItemQuantity(productId, 1);
+      event.preventDefault();
     }
 
-    // Remove item button
-    if (e.target.closest(".cart-item-remove")) {
-      const productId = e.target.closest(".cart-item-remove").dataset.id;
+    // Handle remove item button
+    if (target.closest(".cart-item-remove")) {
+      const button = target.closest(".cart-item-remove");
+      const productId = button.dataset.id;
+      console.log("Remove item:", productId);
       removeFromCart(productId);
+      event.preventDefault();
     }
   });
+
+  // Initial cart UI update
+  updateCartUI();
+}
+
+// Toggle cart drawer
+function toggleCart() {
+  const cartDrawer = document.getElementById("cart-drawer");
+  const overlay = document.getElementById("overlay");
+
+  if (!cartDrawer || !overlay) {
+    console.error("Cart drawer or overlay not found");
+    return;
+  }
+
+  // Update cart UI before showing
+  updateCartUI();
+
+  // Toggle cart drawer
+  cartDrawer.classList.toggle("translate-x-full");
+  overlay.classList.toggle("opacity-0");
+  overlay.classList.toggle("pointer-events-none");
+}
+
+// Open cart drawer
+function openCart() {
+  console.log("Opening cart drawer");
+
+  const cartDrawer = document.getElementById("cart-drawer");
+  const overlay = document.getElementById("overlay");
+
+  if (!cartDrawer || !overlay) {
+    console.error("Cart drawer or overlay not found");
+    return;
+  }
+
+  // Update cart UI before showing
+  updateCartUI();
+
+  // Open cart drawer
+  cartDrawer.classList.remove("translate-x-full");
+  overlay.classList.remove("opacity-0");
+  overlay.classList.remove("pointer-events-none");
+
+  // Force another UI update after a short delay to ensure everything is rendered
+  setTimeout(() => {
+    console.log("Forced update after opening cart");
+    updateCartUI();
+  }, 50);
+}
+
+// Close cart drawer
+function closeCart() {
+  const cartDrawer = document.getElementById("cart-drawer");
+  const overlay = document.getElementById("overlay");
+
+  if (!cartDrawer || !overlay) {
+    console.error("Cart drawer or overlay not found");
+    return;
+  }
+
+  // Close cart drawer
+  cartDrawer.classList.add("translate-x-full");
+  overlay.classList.add("opacity-0");
+  overlay.classList.add("pointer-events-none");
 }
 
 // Add to cart function
 function addToCart(productId) {
+  console.log("Adding to cart:", productId);
+
   fetch("data.json")
     .then((response) => response.json())
     .then((data) => {
@@ -173,13 +255,17 @@ function addToCart(productId) {
         return;
       }
 
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const existingItem = cart.find((item) => item.id === product.id);
+      const existingItemIndex = globalCart.findIndex(
+        (item) => item.id === product.id
+      );
 
-      if (existingItem) {
-        existingItem.quantity += 1;
+      if (existingItemIndex !== -1) {
+        // Update existing item
+        globalCart[existingItemIndex].quantity += 1;
+        console.log("Updated existing item quantity");
       } else {
-        cart.push({
+        // Add new item
+        globalCart.push({
           id: product.id,
           name: product.name,
           price: product.sale
@@ -188,169 +274,194 @@ function addToCart(productId) {
           image: product.image,
           quantity: 1,
         });
+        console.log("Added new item to cart");
       }
 
       // Save to localStorage
-      localStorage.setItem("cart", JSON.stringify(cart));
+      saveCart();
 
       // Update UI
-      refreshCartUI();
+      updateCartUI();
 
       // Open cart drawer
-      openCartDrawer();
+      openCart();
     })
     .catch((error) => {
       console.error("Error adding to cart:", error);
     });
 }
 
-// Update cart item quantity
+// Also update the updateCartItemQuantity function to ensure the cart is open:
 function updateCartItemQuantity(productId, change) {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const itemIndex = cart.findIndex(
+  console.log("Updating quantity:", productId, change);
+
+  const itemIndex = globalCart.findIndex(
     (item) => item.id === Number.parseInt(productId)
   );
 
-  if (itemIndex !== -1) {
-    cart[itemIndex].quantity += change;
+  if (itemIndex === -1) {
+    console.error("Item not found in cart:", productId);
+    return;
+  }
 
-    if (cart[itemIndex].quantity <= 0) {
-      cart.splice(itemIndex, 1);
-    }
+  globalCart[itemIndex].quantity += change;
 
-    // Save to localStorage
-    localStorage.setItem("cart", JSON.stringify(cart));
+  if (globalCart[itemIndex].quantity <= 0) {
+    // Remove item if quantity is 0 or less
+    globalCart.splice(itemIndex, 1);
+    console.log("Removed item due to zero quantity");
+  }
 
-    // Update UI
-    refreshCartUI();
+  // Save to localStorage
+  saveCart();
+
+  // Make sure the cart drawer is open before updating UI
+  const cartDrawer = document.getElementById("cart-drawer");
+  if (cartDrawer && cartDrawer.classList.contains("translate-x-full")) {
+    console.log("Cart drawer is closed, opening it");
+    openCart();
+  } else {
+    // Just update UI if cart is already open
+    updateCartUI();
   }
 }
 
 // Remove item from cart
 function removeFromCart(productId) {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const itemIndex = cart.findIndex(
+  console.log("Removing from cart:", productId);
+
+  const itemIndex = globalCart.findIndex(
     (item) => item.id === Number.parseInt(productId)
   );
 
-  if (itemIndex !== -1) {
-    cart.splice(itemIndex, 1);
-
-    // Save to localStorage
-    localStorage.setItem("cart", JSON.stringify(cart));
-
-    // Update UI
-    refreshCartUI();
+  if (itemIndex === -1) {
+    console.error("Item not found in cart:", productId);
+    return;
   }
-}
 
-// Helper function to open cart drawer
-function openCartDrawer() {
+  globalCart.splice(itemIndex, 1);
+
+  // Save to localStorage
+  saveCart();
+
+  // Make sure the cart drawer is open before updating UI
   const cartDrawer = document.getElementById("cart-drawer");
-  const overlay = document.getElementById("overlay");
-
-  if (cartDrawer && overlay) {
-    cartDrawer.classList.remove("translate-x-full");
-    overlay.classList.remove("opacity-0");
-    overlay.classList.remove("pointer-events-none");
+  if (cartDrawer && cartDrawer.classList.contains("translate-x-full")) {
+    console.log("Cart drawer is closed, opening it");
+    openCart();
+  } else {
+    // Just update UI if cart is already open
+    updateCartUI();
   }
 }
 
-// Helper function to refresh cart UI
-function refreshCartUI() {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  updateCartUI(cart);
+// Save cart to localStorage
+function saveCart() {
+  localStorage.setItem("cart", JSON.stringify(globalCart));
+  console.log("Cart saved to localStorage:", globalCart);
 }
 
 // Update cart UI
-function updateCartUI(cart) {
+function updateCartUI() {
+  console.log("Updating cart UI");
+
+  // Update cart count
   const cartCount = document.getElementById("cart-count");
+  if (cartCount) {
+    const totalItems = globalCart.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
+    cartCount.textContent = totalItems.toString();
+    console.log("Updated cart count:", totalItems);
+  }
+
+  // Force-find cart elements
   const cartItemsContainer = document.getElementById("cart-items");
   const cartTotal = document.getElementById("cart-total");
   const emptyCartMessage = document.getElementById("empty-cart-message");
   const checkoutBtn = document.getElementById("checkout-btn");
 
-  // Update cart count on all pages
-  if (cartCount) {
-    const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-    cartCount.textContent = totalItems.toString();
-  }
-
   // If we're not on a page with the full cart drawer, return early
   if (!cartItemsContainer || !cartTotal || !emptyCartMessage || !checkoutBtn) {
+    console.log("Cart drawer elements not found, skipping detailed UI update");
     return;
   }
 
+  console.log("Found cart elements, updating cart UI details");
+
   // Update cart items
-  if (cart.length === 0) {
+  if (globalCart.length === 0) {
     emptyCartMessage.classList.remove("hidden");
     checkoutBtn.disabled = true;
     cartItemsContainer.innerHTML = "";
+    console.log("Cart is empty, showing empty message");
   } else {
     emptyCartMessage.classList.add("hidden");
     checkoutBtn.disabled = false;
 
     // Calculate total
-    const total = cart.reduce(
+    const total = globalCart.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
     cartTotal.textContent = `$${total.toFixed(2)}`;
+    console.log("Updated cart total:", total);
 
     // Clear existing cart items
     cartItemsContainer.innerHTML = "";
 
     // Render cart items
-    cart.forEach((item) => {
+    globalCart.forEach((item) => {
       const cartItem = document.createElement("div");
       cartItem.className = "cart-item flex items-center gap-4 py-3 border-b";
       cartItem.innerHTML = `
-          <img src="${
-            item.image || "/placeholder.svg?height=60&width=60"
-          }" alt="${item.name}" class="w-16 h-16 object-cover rounded">
-          <div class="flex-grow">
-            <h4 class="font-bold">${item.name}</h4>
-            <div class="flex items-center mt-1">
-              <button class="cart-item-decrease text-gray-500 hover:text-accent" data-id="${
-                item.id
-              }">
-                <i class="fas fa-minus"></i>
-              </button>
-              <span class="mx-2">${item.quantity}</span>
-              <button class="cart-item-increase text-gray-500 hover:text-accent" data-id="${
-                item.id
-              }">
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="font-bold">$${(item.price * item.quantity).toFixed(
-              2
-            )}</div>
-            <button class="cart-item-remove text-gray-500 hover:text-red-500 mt-1" data-id="${
+        <img src="${
+          item.image || "/placeholder.svg?height=60&width=60"
+        }" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+        <div class="flex-grow">
+          <h4 class="font-bold">${item.name}</h4>
+          <div class="flex items-center mt-1">
+            <button class="cart-item-decrease text-gray-500 hover:text-accent" data-id="${
               item.id
             }">
-              <i class="fas fa-trash"></i>
+              <i class="fas fa-minus"></i>
+            </button>
+            <span class="mx-2">${item.quantity}</span>
+            <button class="cart-item-increase text-gray-500 hover:text-accent" data-id="${
+              item.id
+            }">
+              <i class="fas fa-plus"></i>
             </button>
           </div>
-        `;
+        </div>
+        <div class="text-right">
+          <div class="font-bold">$${(item.price * item.quantity).toFixed(
+            2
+          )}</div>
+          <button class="cart-item-remove text-gray-500 hover:text-red-500 mt-1" data-id="${
+            item.id
+          }">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `;
       cartItemsContainer.appendChild(cartItem);
     });
+
+    console.log("Rendered", globalCart.length, "cart items");
   }
 }
 
 // Process checkout with WhatsApp
 function processCheckoutWithWhatsApp() {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  if (cart.length === 0) {
+  if (globalCart.length === 0) {
     alert("Your cart is empty. Please add items before checking out.");
     return;
   }
 
   // Calculate total
-  const subtotal = cart.reduce(
+  const subtotal = globalCart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
@@ -361,7 +472,7 @@ function processCheckoutWithWhatsApp() {
   let message = "Hello, I would like to place an order for:\n\n";
 
   // Add each item to the message
-  cart.forEach((item) => {
+  globalCart.forEach((item) => {
     message += `${item.name} x${item.quantity} - ${(
       item.price * item.quantity
     ).toFixed(2)} DH\n`;
@@ -520,31 +631,31 @@ function renderFeaturedProducts(products) {
     productCard.className =
       "product-card bg-white dark:bg-dark-card rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all";
     productCard.innerHTML = `
-              <div class="product-image-container">
-                  <img src="${
-                    product.image || "/placeholder.svg?height=300&width=400"
-                  }" alt="${
+            <div class="product-image-container">
+                <img src="${
+                  product.image || "/placeholder.svg?height=300&width=400"
+                }" alt="${
       product.name
     }" class="product-image w-full h-48 object-cover">
-              </div>
-              <div class="p-4">
-                  <h3 class="text-xl font-bold mb-2">${product.name}</h3>
-                  <p class="text-gray-600 dark:text-gray-400 mb-4">${product.description.substring(
-                    0,
-                    80
-                  )}...</p>
-                  <div class="flex justify-between items-center">
-                      <span class="text-lg font-bold">$${product.price.toFixed(
-                        2
-                      )}</span>
-                      <button class="add-to-cart-btn bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors" data-id="${
-                        product.id
-                      }">
-                          Add to Cart
-                      </button>
-                  </div>
-              </div>
-          `;
+            </div>
+            <div class="p-4">
+                <h3 class="text-xl font-bold mb-2">${product.name}</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">${product.description.substring(
+                  0,
+                  80
+                )}...</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-bold">$${product.price.toFixed(
+                      2
+                    )}</span>
+                    <button class="add-to-cart-btn bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors" data-id="${
+                      product.id
+                    }">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        `;
     featuredProductsContainer.appendChild(productCard);
   });
 }
@@ -584,51 +695,51 @@ function renderProductsGrid(products) {
       "product-item product-card bg-white dark:bg-dark-card rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all";
     productCard.dataset.category = product.category;
     productCard.innerHTML = `
-              <div class="product-image-container">
-                  <img src="${
-                    product.image || "/placeholder.svg?height=300&width=400"
-                  }" alt="${
+            <div class="product-image-container">
+                <img src="${
+                  product.image || "/placeholder.svg?height=300&width=400"
+                }" alt="${
       product.name
     }" class="product-image w-full h-64 object-cover">
-                  ${
-                    product.sale
-                      ? '<span class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm">SALE</span>'
-                      : ""
-                  }
-              </div>
-              <div class="p-4">
-                  <h3 class="text-xl font-bold mb-2">${product.name}</h3>
-                  <p class="text-gray-600 dark:text-gray-400 mb-4">${product.description.substring(
-                    0,
-                    80
-                  )}...</p>
-                  <div class="flex justify-between items-center">
-                      <div>
-                          ${
-                            product.sale
-                              ? `
-                              <span class="text-lg font-bold">$${product.salePrice.toFixed(
-                                2
-                              )}</span>
-                              <span class="text-sm text-gray-500 line-through ml-2">$${product.price.toFixed(
-                                2
-                              )}</span>
-                          `
-                              : `
-                              <span class="text-lg font-bold">$${product.price.toFixed(
-                                2
-                              )}</span>
-                          `
-                          }
-                      </div>
-                      <button class="add-to-cart-btn bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors" data-id="${
-                        product.id
-                      }">
-                          Add to Cart
-                      </button>
-                  </div>
-              </div>
-          `;
+                ${
+                  product.sale
+                    ? '<span class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm">SALE</span>'
+                    : ""
+                }
+            </div>
+            <div class="p-4">
+                <h3 class="text-xl font-bold mb-2">${product.name}</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">${product.description.substring(
+                  0,
+                  80
+                )}...</p>
+                <div class="flex justify-between items-center">
+                    <div>
+                        ${
+                          product.sale
+                            ? `
+                            <span class="text-lg font-bold">$${product.salePrice.toFixed(
+                              2
+                            )}</span>
+                            <span class="text-sm text-gray-500 line-through ml-2">$${product.price.toFixed(
+                              2
+                            )}</span>
+                        `
+                            : `
+                            <span class="text-lg font-bold">$${product.price.toFixed(
+                              2
+                            )}</span>
+                        `
+                        }
+                    </div>
+                    <button class="add-to-cart-btn bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition-colors" data-id="${
+                      product.id
+                    }">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        `;
     productsGrid.appendChild(productCard);
   });
 }
@@ -650,22 +761,19 @@ function renderCategoriesPreview(categories) {
     categoryCard.className =
       "bg-white dark:bg-dark-card rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all transform hover:-translate-y-1 duration-300";
     categoryCard.innerHTML = `
-              <a href="categories.html?filter=${category.id}" class="block">
-                  <div class="relative">
-                      <img src="${
-                        category.image ||
-                        "/placeholder.svg?height=200&width=300"
-                      }" alt="${
-      category.name
-    }" class="w-full h-40 object-cover">
-                      <div class="absolute inset-0 bg-primary bg-opacity-30 flex items-center justify-center">
-                          <h3 class="text-xl font-bold text-white">${
-                            category.name
-                          }</h3>
-                      </div>
-                  </div>
-              </a>
-          `;
+            <a href="categories.html?filter=${category.id}" class="block">
+                <div class="relative">
+                    <img src="${
+                      category.image || "/placeholder.svg?height=200&width=300"
+                    }" alt="${category.name}" class="w-full h-40 object-cover">
+                    <div class="absolute inset-0 bg-primary bg-opacity-30 flex items-center justify-center">
+                        <h3 class="text-xl font-bold text-white">${
+                          category.name
+                        }</h3>
+                    </div>
+                </div>
+            </a>
+        `;
     categoriesPreview.appendChild(categoryCard);
   });
 }
