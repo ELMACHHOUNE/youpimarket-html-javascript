@@ -1,0 +1,268 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Harmony Dining Table",
+      "category": "dining",
+      "price": 1299.99,
+      "salePrice": 999.99,
+      "sale": true,
+      "featured": true,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A stunning dining table with a live edge walnut top and sculptural base. This piece combines natural beauty with artistic design for a truly unique dining experience.",
+      "dimensions": {
+        "length": 72,
+        "width": 36,
+        "height": 30
+      },
+      "materials": ["Walnut", "Steel"],
+      "inStock": true
+    },
+    {
+      "id": 2,
+      "name": "Cascade Coffee Table",
+      "category": "coffee",
+      "price": 799.99,
+      "salePrice": null,
+      "sale": false,
+      "featured": true,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "Inspired by flowing water, this coffee table features a glass top that appears to float above a sculptural wooden base with teal accents. A conversation piece that brings artistic flair to any living room.",
+      "dimensions": {
+        "length": 48,
+        "width": 28,
+        "height": 18
+      },
+      "materials": ["Glass", "Maple", "Brass"],
+      "inStock": true
+    },
+    {
+      "id": 3,
+      "name": "Eclipse Side Table",
+      "category": "side",
+      "price": 449.99,
+      "salePrice": 399.99,
+      "sale": true,
+      "featured": true,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A versatile side table with overlapping circular forms that create a play of light and shadow. Perfect as a bedside table or accent piece in any room.",
+      "dimensions": {
+        "length": 20,
+        "width": 20,
+        "height": 24
+      },
+      "materials": ["Oak", "Marble"],
+      "inStock": true
+    },
+    {
+      "id": 4,
+      "name": "Horizon Console Table",
+      "category": "console",
+      "price": 899.99,
+      "salePrice": null,
+      "sale": false,
+      "featured": false,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A sleek console table with a minimalist design that emphasizes clean lines and negative space. The perfect addition to an entryway or behind a sofa.",
+      "dimensions": {
+        "length": 60,
+        "width": 16,
+        "height": 30
+      },
+      "materials": ["Ash", "Blackened Steel"],
+      "inStock": true
+    },
+    {
+      "id": 5,
+      "name": "Mosaic Dining Table",
+      "category": "dining",
+      "price": 1599.99,
+      "salePrice": null,
+      "sale": false,
+      "featured": false,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A round dining table featuring an intricate mosaic pattern of reclaimed woods. Each piece is unique, creating a one-of-a-kind table that tells a story of sustainability and craftsmanship.",
+      "dimensions": {
+        "diameter": 60,
+        "height": 30
+      },
+      "materials": ["Reclaimed Woods", "Steel"],
+      "inStock": true
+    },
+    {
+      "id": 6,
+      "name": "Prism Coffee Table",
+      "category": "coffee",
+      "price": 749.99,
+      "salePrice": 649.99,
+      "sale": true,
+      "featured": false,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A geometric coffee table with faceted sides that reflect light in captivating ways. The glass top provides a clear view of the artistic base below.",
+      "dimensions": {
+        "length": 42,
+        "width": 24,
+        "height": 16
+      },
+      "materials": ["Glass", "Brass", "Walnut"],
+      "inStock": true
+    },
+    {
+      "id": 7,
+      "name": "Nest Side Tables (Set of 3)",
+      "category": "side",
+      "price": 599.99,
+      "salePrice": null,
+      "sale": false,
+      "featured": false,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A set of three nesting side tables with varying heights and complementary designs. Use them together or separately for flexible, artistic functionality.",
+      "dimensions": {
+        "large": {
+          "length": 20,
+          "width": 20,
+          "height": 24
+        },
+        "medium": {
+          "length": 16,
+          "width": 16,
+          "height": 20
+        },
+        "small": {
+          "length": 12,
+          "width": 12,
+          "height": 16
+        }
+      },
+      "materials": ["Cherry", "Copper"],
+      "inStock": true
+    },
+    {
+      "id": 8,
+      "name": "Ribbon Console Table",
+      "category": "console",
+      "price": 1099.99,
+      "salePrice": 899.99,
+      "sale": true,
+      "featured": false,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A console table with a base that appears to flow like a ribbon, creating a sense of movement and grace. The marble top adds a touch of luxury to this artistic piece.",
+      "dimensions": {
+        "length": 54,
+        "width": 18,
+        "height": 32
+      },
+      "materials": ["Marble", "Bent Plywood"],
+      "inStock": true
+    },
+    {
+      "id": 9,
+      "name": "Canopy Dining Table",
+      "category": "dining",
+      "price": 1899.99,
+      "salePrice": null,
+      "sale": false,
+      "featured": false,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "Inspired by forest canopies, this dining table features an intricate base that mimics the branching patterns of trees. The solid wood top provides a sturdy surface for memorable gatherings.",
+      "dimensions": {
+        "length": 84,
+        "width": 42,
+        "height": 30
+      },
+      "materials": ["Oak", "Bronze"],
+      "inStock": true
+    },
+    {
+      "id": 10,
+      "name": "Ripple Coffee Table",
+      "category": "coffee",
+      "price": 849.99,
+      "salePrice": null,
+      "sale": false,
+      "featured": false,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A coffee table with a surface that mimics the gentle ripples of water. The organic form creates a sense of calm and natural beauty in your living space.",
+      "dimensions": {
+        "length": 50,
+        "width": 30,
+        "height": 17
+      },
+      "materials": ["Maple", "Glass"],
+      "inStock": true
+    },
+    {
+      "id": 11,
+      "name": "Pedestal Side Table",
+      "category": "side",
+      "price": 399.99,
+      "salePrice": 349.99,
+      "sale": true,
+      "featured": false,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A sculptural side table that doubles as a pedestal for displaying art objects. The interplay of materials creates visual interest and versatility.",
+      "dimensions": {
+        "diameter": 18,
+        "height": 22
+      },
+      "materials": ["Concrete", "Brass"],
+      "inStock": true
+    },
+    {
+      "id": 12,
+      "name": "Mirage Console Table",
+      "category": "console",
+      "price": 1299.99,
+      "salePrice": null,
+      "sale": false,
+      "featured": false,
+      "image": "/placeholder.svg?height=300&width=400",
+      "description": "A console table with a reflective surface that creates the illusion of depth and space. The minimalist design allows it to complement any interior style.",
+      "dimensions": {
+        "length": 60,
+        "width": 14,
+        "height": 30
+      },
+      "materials": ["Mirrored Glass", "Stainless Steel"],
+      "inStock": true
+    }
+  ],
+  "categories": [
+    {
+      "id": "dining",
+      "name": "Dining Tables",
+      "image": "/placeholder.svg?height=200&width=300",
+      "description": "Artistic dining tables that serve as the centerpiece for memorable gatherings."
+    },
+    {
+      "id": "coffee",
+      "name": "Coffee Tables",
+      "image": "/placeholder.svg?height=200&width=300",
+      "description": "Sculptural coffee tables that blend art and functionality in your living space."
+    },
+    {
+      "id": "side",
+      "name": "Side Tables",
+      "image": "/placeholder.svg?height=200&width=300",
+      "description": "Versatile side tables that add artistic flair to any room."
+    },
+    {
+      "id": "console",
+      "name": "Console Tables",
+      "image": "/placeholder.svg?height=200&width=300",
+      "description": "Elegant console tables that transform entryways and living spaces."
+    },
+    {
+      "id": "custom",
+      "name": "Custom Designs",
+      "image": "/placeholder.svg?height=200&width=300",
+      "description": "Bespoke tables crafted to your specifications and unique vision."
+    },
+    {
+      "id": "limited",
+      "name": "Limited Editions",
+      "image": "/placeholder.svg?height=200&width=300",
+      "description": "Exclusive, limited-run artistic tables for the discerning collector."
+    }
+  ]
+}

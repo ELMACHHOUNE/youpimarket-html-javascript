@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products - YoupiMarket</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="bg-light-bg text-dark-text transition-colors duration-300">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-primary shadow-md">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center space-x-4">
+            <a href="index.html" class="flex items-center">
+              <span class="text-2xl font-bold text-white"
+                >Youpi<span class="text-accent">Market</span></span
+              >
+            </a>
+          </div>
+
+          <div class="hidden md:flex items-center space-x-8">
+            <a
+              href="index.html"
+              class="text-white hover:text-accent transition-colors"
+              >Home</a
+            >
+            <a
+              href="products.html"
+              class="text-white hover:text-accent transition-colors"
+              >Products</a
+            >
+            <a
+              href="categories.html"
+              class="text-white hover:text-accent transition-colors"
+              >Categories</a
+            >
+            <a
+              href="about.html"
+              class="text-white hover:text-accent transition-colors"
+              >About</a
+            >
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <button
+              id="theme-toggle"
+              class="text-white hover:text-accent transition-colors"
+            >
+              <i class="fas fa-sun text-xl" id="light-icon"></i>
+              <i class="fas fa-moon text-xl hidden" id="dark-icon"></i>
+            </button>
+            <button
+              id="cart-toggle"
+              class="text-white hover:text-accent transition-colors"
+            >
+              <i class="fas fa-shopping-cart text-xl"></i>
+              <span
+                id="cart-count"
+                class="bg-accent text-white rounded-full px-2 py-1 text-xs ml-1"
+                >0</span
+              >
+            </button>
+            <button
+              id="mobile-menu-toggle"
+              class="md:hidden text-white hover:text-accent transition-colors"
+            >
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden py-4">
+          <a
+            href="index.html"
+            class="block py-2 text-white hover:text-accent transition-colors"
+            >Home</a
+          >
+          <a
+            href="products.html"
+            class="block py-2 text-white hover:text-accent transition-colors"
+            >Products</a
+          >
+          <a
+            href="categories.html"
+            class="block py-2 text-white hover:text-accent transition-colors"
+            >Categories</a
+          >
+          <a
+            href="about.html"
+            class="block py-2 text-white hover:text-accent transition-colors"
+            >About</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Cart Drawer -->
+    <div
+      id="cart-drawer"
+      class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-dark-bg shadow-lg transform translate-x-full transition-transform duration-300 z-50"
+    >
+      <div class="p-4 h-full flex flex-col">
+        <div class="flex justify-between items-center border-b pb-4">
+          <h2 class="text-xl font-bold">Your Cart</h2>
+          <button id="close-cart" class="text-gray-500 hover:text-accent">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto py-4">
+          <!-- Cart items will be added here dynamically -->
+          <p id="empty-cart-message" class="text-center text-gray-500 py-8">
+            Your cart is empty
+          </p>
+        </div>
+        <div class="border-t pt-4">
+          <div class="flex justify-between mb-4">
+            <span class="font-bold">Total:</span>
+            <span id="cart-total" class="font-bold">$0.00</span>
+          </div>
+          <button
+            id="checkout-btn"
+            class="w-full bg-accent hover:bg-accent-dark text-white py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled
+          >
+            Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay for Cart Drawer -->
+    <div
+      id="overlay"
+      class="fixed inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 z-40"
+    ></div>
+
+    <!-- Products Header -->
+    <section class="bg-secondary py-12">
+      <div class="container mx-auto px-4">
+        <h1 class="text-4xl font-bold text-center mb-4">Our Products</h1>
+        <p class="text-center max-w-2xl mx-auto">
+          Discover our collection of handcrafted artistic tables that blend
+          beauty and functionality.
+        </p>
+      </div>
+    </section>
+
+    <!-- Products Filters -->
+    <section class="py-8 border-b">
+      <div class="container mx-auto px-4">
+        <div
+          class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+        >
+          <div class="flex flex-wrap gap-2">
+            <button
+              class="filter-btn active bg-primary text-white px-4 py-2 rounded-md"
+              data-category="all"
+            >
+              All
+            </button>
+            <button
+              class="filter-btn bg-white dark:bg-dark-card text-dark-text dark:text-white px-4 py-2 rounded-md"
+              data-category="dining"
+            >
+              Dining Tables
+            </button>
+            <button
+              class="filter-btn bg-white dark:bg-dark-card text-dark-text dark:text-white px-4 py-2 rounded-md"
+              data-category="coffee"
+            >
+              Coffee Tables
+            </button>
+            <button
+              class="filter-btn bg-white dark:bg-dark-card text-dark-text dark:text-white px-4 py-2 rounded-md"
+              data-category="side"
+            >
+              Side Tables
+            </button>
+            <button
+              class="filter-btn bg-white dark:bg-dark-card text-dark-text dark:text-white px-4 py-2 rounded-md"
+              data-category="console"
+            >
+              Console Tables
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="sort-select" class="text-sm">Sort by:</label>
+            <select
+              id="sort-select"
+              class="bg-white dark:bg-dark-card text-dark-text dark:text-white px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700"
+            >
+              <option value="featured">Featured</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="newest">Newest</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="py-12">
+      <div class="container mx-auto px-4">
+        <div
+          id="products-grid"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+        >
+          <!-- Products will be loaded dynamically -->
+          <div
+            class="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg h-80"
+          ></div>
+          <div
+            class="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg h-80"
+          ></div>
+          <div
+            class="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg h-80"
+          ></div>
+          <div
+            class="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg h-80"
+          ></div>
+          <div
+            class="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg h-80"
+          ></div>
+          <div
+            class="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg h-80"
+          ></div>
+          <div
+            class="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg h-80"
+          ></div>
+          <div
+            class="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg h-80"
+          ></div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-12">
+          <nav class="inline-flex rounded-md shadow-sm">
+            <button
+              class="pagination-btn px-4 py-2 text-sm font-medium bg-white dark:bg-dark-card text-dark-text dark:text-white border border-gray-300 dark:border-gray-700 rounded-l-md hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
+              disabled
+            >
+              Previous
+            </button>
+            <button
+              class="pagination-btn px-4 py-2 text-sm font-medium bg-primary text-white border border-primary"
+            >
+              1
+            </button>
+            <button
+              class="pagination-btn px-4 py-2 text-sm font-medium bg-white dark:bg-dark-card text-dark-text dark:text-white border border-gray-300 dark:border-gray-700"
+            >
+              2
+            </button>
+            <button
+              class="pagination-btn px-4 py-2 text-sm font-medium bg-white dark:bg-dark-card text-dark-text dark:text-white border border-gray-300 dark:border-gray-700"
+            >
+              3
+            </button>
+            <button
+              class="pagination-btn px-4 py-2 text-sm font-medium bg-white dark:bg-dark-card text-dark-text dark:text-white border border-gray-300 dark:border-gray-700 rounded-r-md hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Next
+            </button>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark-bg text-white py-12">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h3 class="text-xl font-bold mb-4">YoupiMarket</h3>
+            <p class="mb-4">
+              Bringing art and functionality together in every piece of
+              furniture we create.
+            </p>
+            <div class="flex space-x-4">
+              <a href="#" class="text-white hover:text-accent transition-colors"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#" class="text-white hover:text-accent transition-colors"
+                ><i class="fab fa-twitter"></i
+              ></a>
+              <a href="#" class="text-white hover:text-accent transition-colors"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="text-white hover:text-accent transition-colors"
+                ><i class="fab fa-pinterest"></i
+              ></a>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">Shop</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="products.html"
+                  class="hover:text-accent transition-colors"
+                  >All Products</a
+                >
+              </li>
+              <li>
+                <a
+                  href="categories.html"
+                  class="hover:text-accent transition-colors"
+                  >Categories</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >New Arrivals</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors">Sale</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">About</h3>
+            <ul class="space-y-2">
+              <li>
+                <a href="about.html" class="hover:text-accent transition-colors"
+                  >Our Story</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Artisans</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Sustainability</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors">Blog</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">Customer Service</h3>
+            <ul class="space-y-2">
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Contact Us</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Shipping & Returns</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors">FAQ</a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Privacy Policy</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+          <p>
+            &copy; <span id="current-year"></span> YoupiMarket. All rights
+            reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

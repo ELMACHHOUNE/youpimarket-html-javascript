@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us - YoupiMarket</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="bg-light-bg text-dark-text transition-colors duration-300">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-primary shadow-md">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center space-x-4">
+            <a href="index.html" class="flex items-center">
+              <span class="text-2xl font-bold text-white"
+                >Youpi<span class="text-accent">Market</span></span
+              >
+            </a>
+          </div>
+
+          <div class="hidden md:flex items-center space-x-8">
+            <a
+              href="index.html"
+              class="text-white hover:text-accent transition-colors"
+              >Home</a
+            >
+            <a
+              href="products.html"
+              class="text-white hover:text-accent transition-colors"
+              >Products</a
+            >
+            <a
+              href="categories.html"
+              class="text-white hover:text-accent transition-colors"
+              >Categories</a
+            >
+            <a
+              href="about.html"
+              class="text-white hover:text-accent transition-colors"
+              >About</a
+            >
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <button
+              id="theme-toggle"
+              class="text-white hover:text-accent transition-colors"
+            >
+              <i class="fas fa-sun text-xl" id="light-icon"></i>
+              <i class="fas fa-moon text-xl hidden" id="dark-icon"></i>
+            </button>
+            <button
+              id="cart-toggle"
+              class="text-white hover:text-accent transition-colors"
+            >
+              <i class="fas fa-shopping-cart text-xl"></i>
+              <span
+                id="cart-count"
+                class="bg-accent text-white rounded-full px-2 py-1 text-xs ml-1"
+                >0</span
+              >
+            </button>
+            <button
+              id="mobile-menu-toggle"
+              class="md:hidden text-white hover:text-accent transition-colors"
+            >
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden py-4">
+          <a
+            href="index.html"
+            class="block py-2 text-white hover:text-accent transition-colors"
+            >Home</a
+          >
+          <a
+            href="products.html"
+            class="block py-2 text-white hover:text-accent transition-colors"
+            >Products</a
+          >
+          <a
+            href="categories.html"
+            class="block py-2 text-white hover:text-accent transition-colors"
+            >Categories</a
+          >
+          <a
+            href="about.html"
+            class="block py-2 text-white hover:text-accent transition-colors"
+            >About</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Cart Drawer -->
+    <div
+      id="cart-drawer"
+      class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-dark-bg shadow-lg transform translate-x-full transition-transform duration-300 z-50"
+    >
+      <div class="p-4 h-full flex flex-col">
+        <div class="flex justify-between items-center border-b pb-4">
+          <h2 class="text-xl font-bold">Your Cart</h2>
+          <button id="close-cart" class="text-gray-500 hover:text-accent">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto py-4">
+          <!-- Cart items will be added here dynamically -->
+          <p id="empty-cart-message" class="text-center text-gray-500 py-8">
+            Your cart is empty
+          </p>
+        </div>
+        <div class="border-t pt-4">
+          <div class="flex justify-between mb-4">
+            <span class="font-bold">Total:</span>
+            <span id="cart-total" class="font-bold">$0.00</span>
+          </div>
+          <button
+            id="checkout-btn"
+            class="w-full bg-accent hover:bg-accent-dark text-white py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled
+          >
+            Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay for Cart Drawer -->
+    <div
+      id="overlay"
+      class="fixed inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 z-40"
+    ></div>
+
+    <!-- About Header -->
+    <section class="bg-secondary py-16">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 animate-fade-in">
+          Our Story
+        </h1>
+        <p class="max-w-2xl mx-auto text-lg animate-fade-in-delayed">
+          Discover the passion and craftsmanship behind YoupiMarket's artistic
+          tables.
+        </p>
+      </div>
+    </section>
+
+    <!-- Our Mission -->
+    <section class="py-16">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center gap-12">
+          <div class="md:w-1/2 animate-slide-in-left">
+            <img
+              src="/placeholder.svg?height=400&width=600"
+              alt="Our Workshop"
+              class="rounded-lg shadow-lg"
+            />
+          </div>
+          <div class="md:w-1/2 animate-slide-in-right">
+            <h2 class="text-3xl font-bold mb-6">Our Mission</h2>
+            <p class="mb-4">
+              At YoupiMarket, we believe that furniture should be more than just
+              functional—it should be a work of art that inspires and delights.
+              Our mission is to create tables that serve as the centerpiece of
+              your home, blending artistic expression with everyday utility.
+            </p>
+            <p class="mb-4">
+              Each piece we create is handcrafted by skilled artisans who pour
+              their passion and expertise into every detail. We source
+              sustainable materials and employ traditional techniques alongside
+              innovative approaches to create furniture that is both timeless
+              and contemporary.
+            </p>
+            <p>
+              Our commitment to quality, sustainability, and artistic integrity
+              guides everything we do, from the selection of materials to the
+              final finishing touches on each piece.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Values -->
+    <section class="py-16 bg-light-accent dark:bg-dark-accent">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-12 text-center">Our Values</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div
+            class="bg-white dark:bg-dark-card p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow"
+          >
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <i class="fas fa-palette text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-4">Artistic Excellence</h3>
+            <p>
+              We approach each table as a canvas for creative expression,
+              pushing the boundaries of design while maintaining functionality.
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-dark-card p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow"
+          >
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <i class="fas fa-leaf text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-4">Sustainability</h3>
+            <p>
+              We are committed to environmentally responsible practices, from
+              sourcing sustainable materials to minimizing waste in our
+              production process.
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-dark-card p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow"
+          >
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <i class="fas fa-hands text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-4">Craftsmanship</h3>
+            <p>
+              We honor traditional woodworking techniques while embracing
+              innovation, ensuring each piece is built to last for generations.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Team -->
+    <section class="py-16">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-12 text-center">Meet Our Artisans</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div
+            class="bg-white dark:bg-dark-card rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+          >
+            <img
+              src="/placeholder.svg?height=300&width=300"
+              alt="Team Member"
+              class="w-full h-64 object-cover"
+            />
+            <div class="p-4">
+              <h3 class="text-xl font-bold mb-2">Jean Dupont</h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-2">
+                Master Craftsman
+              </p>
+              <p class="text-sm">
+                With over 20 years of experience, Jean brings traditional
+                woodworking techniques to each piece he creates.
+              </p>
+            </div>
+          </div>
+          <div
+            class="bg-white dark:bg-dark-card rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+          >
+            <img
+              src="/placeholder.svg?height=300&width=300"
+              alt="Team Member"
+              class="w-full h-64 object-cover"
+            />
+            <div class="p-4">
+              <h3 class="text-xl font-bold mb-2">Sophie Martin</h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-2">Designer</p>
+              <p class="text-sm">
+                Sophie's innovative designs push the boundaries of what a table
+                can be, blending form and function seamlessly.
+              </p>
+            </div>
+          </div>
+          <div
+            class="bg-white dark:bg-dark-card rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+          >
+            <img
+              src="/placeholder.svg?height=300&width=300"
+              alt="Team Member"
+              class="w-full h-64 object-cover"
+            />
+            <div class="p-4">
+              <h3 class="text-xl font-bold mb-2">Marco Rossi</h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-2">
+                Finishing Specialist
+              </p>
+              <p class="text-sm">
+                Marco's expertise in finishes and stains brings out the natural
+                beauty of the wood in each of our pieces.
+              </p>
+            </div>
+          </div>
+          <div
+            class="bg-white dark:bg-dark-card rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+          >
+            <img
+              src="/placeholder.svg?height=300&width=300"
+              alt="Team Member"
+              class="w-full h-64 object-cover"
+            />
+            <div class="p-4">
+              <h3 class="text-xl font-bold mb-2">Aisha Johnson</h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-2">
+                Materials Sourcer
+              </p>
+              <p class="text-sm">
+                Aisha ensures we source the highest quality sustainable
+                materials for all our creations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Process -->
+    <section class="py-16 bg-light-accent dark:bg-dark-accent">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-12 text-center">Our Process</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div class="text-center">
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <span class="text-xl font-bold">1</span>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Design</h3>
+            <p>
+              Our designers sketch concepts, considering both aesthetics and
+              functionality.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <span class="text-xl font-bold">2</span>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Material Selection</h3>
+            <p>
+              We carefully source sustainable woods and materials for each
+              piece.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <span class="text-xl font-bold">3</span>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Crafting</h3>
+            <p>Our artisans handcraft each table with precision and care.</p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <span class="text-xl font-bold">4</span>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Finishing</h3>
+            <p>
+              Each piece receives a meticulous finish to enhance its beauty and
+              durability.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-16">
+      <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto text-center">
+          <h2 class="text-3xl font-bold mb-6">Get in Touch</h2>
+          <p class="mb-8">
+            Have questions or want to learn more about our artistic tables? We'd
+            love to hear from you!
+          </p>
+          <div class="bg-white dark:bg-dark-card p-8 rounded-lg shadow-md">
+            <form id="contact-form" class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="name" class="block text-sm font-medium mb-1"
+                    >Name</label
+                  >
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="email" class="block text-sm font-medium mb-1"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="subject" class="block text-sm font-medium mb-1"
+                  >Subject</label
+                >
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                />
+              </div>
+              <div>
+                <label for="message" class="block text-sm font-medium mb-1"
+                  >Message</label
+                >
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="4"
+                  class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                class="w-full bg-primary hover:bg-primary-dark text-white py-2 rounded-md transition-colors"
+              >
+                Send Message
+              </button>
+            </form>
+            <p id="contact-message" class="mt-4 hidden"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark-bg text-white py-12">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h3 class="text-xl font-bold mb-4">YoupiMarket</h3>
+            <p class="mb-4">
+              Bringing art and functionality together in every piece of
+              furniture we create.
+            </p>
+            <div class="flex space-x-4">
+              <a href="#" class="text-white hover:text-accent transition-colors"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#" class="text-white hover:text-accent transition-colors"
+                ><i class="fab fa-twitter"></i
+              ></a>
+              <a href="#" class="text-white hover:text-accent transition-colors"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="text-white hover:text-accent transition-colors"
+                ><i class="fab fa-pinterest"></i
+              ></a>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">Shop</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="products.html"
+                  class="hover:text-accent transition-colors"
+                  >All Products</a
+                >
+              </li>
+              <li>
+                <a
+                  href="categories.html"
+                  class="hover:text-accent transition-colors"
+                  >Categories</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >New Arrivals</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors">Sale</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">About</h3>
+            <ul class="space-y-2">
+              <li>
+                <a href="about.html" class="hover:text-accent transition-colors"
+                  >Our Story</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Artisans</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Sustainability</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors">Blog</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">Customer Service</h3>
+            <ul class="space-y-2">
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Contact Us</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Shipping & Returns</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors">FAQ</a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-accent transition-colors"
+                  >Privacy Policy</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+          <p>
+            &copy; <span id="current-year"></span> YoupiMarket. All rights
+            reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
