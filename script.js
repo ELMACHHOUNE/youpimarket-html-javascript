@@ -100,11 +100,11 @@ function initTheme() {
 function initCart() {
   console.log("Initializing cart");
 
-  // Add event listener for "Add to Cart" buttons
+  // Add event listeners for "Add to Cart" buttons
   document.addEventListener("click", (event) => {
     const target = event.target;
 
-    // Handle "Add to Cart" button clicks
+    // Add to cart button
     if (
       target.classList.contains("add-to-cart-btn") ||
       target.closest(".add-to-cart-btn")
@@ -118,63 +118,36 @@ function initCart() {
       event.preventDefault();
     }
 
-    // Handle cart toggle button
+    // Cart toggle button
     if (target.closest("#cart-toggle")) {
       console.log("Cart toggle clicked");
       toggleCart();
       event.preventDefault();
     }
 
-    // Handle close cart button
+    // Close cart button
     if (target.closest("#close-cart")) {
       console.log("Close cart clicked");
       closeCart();
       event.preventDefault();
     }
 
-    // Handle cart overlay
+    // Cart overlay
     if (target.id === "overlay") {
       console.log("Overlay clicked");
       closeCart();
     }
 
-    // Handle checkout button
+    // Checkout button
     if (target.closest("#checkout-btn")) {
       console.log("Checkout clicked");
       processCheckoutWithWhatsApp();
       event.preventDefault();
     }
-
-    // Handle decrease quantity button
-    if (target.closest(".cart-item-decrease")) {
-      const button = target.closest(".cart-item-decrease");
-      const productId = button.dataset.id;
-      console.log("Decrease quantity for product:", productId);
-      updateCartItemQuantity(productId, -1);
-      event.preventDefault();
-    }
-
-    // Handle increase quantity button
-    if (target.closest(".cart-item-increase")) {
-      const button = target.closest(".cart-item-increase");
-      const productId = button.dataset.id;
-      console.log("Increase quantity for product:", productId);
-      updateCartItemQuantity(productId, 1);
-      event.preventDefault();
-    }
-
-    // Handle remove item button
-    if (target.closest(".cart-item-remove")) {
-      const button = target.closest(".cart-item-remove");
-      const productId = button.dataset.id;
-      console.log("Remove item:", productId);
-      removeFromCart(productId);
-      event.preventDefault();
-    }
   });
 
   // Initial cart UI update
-  updateCartUI();
+  updateCartCount();
 }
 
 // Toggle cart drawer
@@ -187,13 +160,13 @@ function toggleCart() {
     return;
   }
 
-  // Update cart UI before showing
-  updateCartUI();
+  const isCartOpen = !cartDrawer.classList.contains("translate-x-full");
 
-  // Toggle cart drawer
-  cartDrawer.classList.toggle("translate-x-full");
-  overlay.classList.toggle("opacity-0");
-  overlay.classList.toggle("pointer-events-none");
+  if (isCartOpen) {
+    closeCart();
+  } else {
+    openCart();
+  }
 }
 
 // Open cart drawer
@@ -208,23 +181,21 @@ function openCart() {
     return;
   }
 
-  // Update cart UI before showing
-  updateCartUI();
-
-  // Open cart drawer
+  // Show cart drawer first
   cartDrawer.classList.remove("translate-x-full");
   overlay.classList.remove("opacity-0");
   overlay.classList.remove("pointer-events-none");
 
-  // Force another UI update after a short delay to ensure everything is rendered
+  // Then update cart UI with a small delay to ensure the drawer is visible
   setTimeout(() => {
-    console.log("Forced update after opening cart");
-    updateCartUI();
-  }, 50);
+    renderCartItems();
+  }, 100);
 }
 
 // Close cart drawer
 function closeCart() {
+  console.log("Closing cart drawer");
+
   const cartDrawer = document.getElementById("cart-drawer");
   const overlay = document.getElementById("overlay");
 
@@ -233,7 +204,7 @@ function closeCart() {
     return;
   }
 
-  // Close cart drawer
+  // Hide cart drawer
   cartDrawer.classList.add("translate-x-full");
   overlay.classList.add("opacity-0");
   overlay.classList.add("pointer-events-none");
@@ -243,30 +214,47 @@ function closeCart() {
 function addToCart(productId) {
   console.log("Adding to cart:", productId);
 
+  // Convert productId to number to ensure consistent comparison
+  const productIdNum = Number.parseInt(productId, 10);
+  if (isNaN(productIdNum)) {
+    console.error("Invalid product ID:", productId);
+    return;
+  }
+
   fetch("data.json")
     .then((response) => response.json())
     .then((data) => {
-      const product = data.products.find(
-        (p) => p.id === Number.parseInt(productId)
-      );
+      const product = data.products.find((p) => p.id === productIdNum);
 
       if (!product) {
-        console.error("Product not found:", productId);
+        console.error("Product not found:", productIdNum);
         return;
       }
 
+      // Check if product already exists in cart
       const existingItemIndex = globalCart.findIndex(
-        (item) => item.id === product.id
+        (item) => item.id === productIdNum
+      );
+      console.log(
+        "Existing item index:",
+        existingItemIndex,
+        "for product ID:",
+        productIdNum
       );
 
       if (existingItemIndex !== -1) {
         // Update existing item
         globalCart[existingItemIndex].quantity += 1;
-        console.log("Updated existing item quantity");
+        console.log(
+          "Updated existing item quantity for",
+          globalCart[existingItemIndex].name,
+          "to",
+          globalCart[existingItemIndex].quantity
+        );
       } else {
         // Add new item
         globalCart.push({
-          id: product.id,
+          id: productIdNum,
           name: product.name,
           price: product.sale
             ? product.salePrice || product.price
@@ -274,14 +262,14 @@ function addToCart(productId) {
           image: product.image,
           quantity: 1,
         });
-        console.log("Added new item to cart");
+        console.log("Added new item to cart:", product.name);
       }
 
       // Save to localStorage
       saveCart();
 
-      // Update UI
-      updateCartUI();
+      // Update cart count
+      updateCartCount();
 
       // Open cart drawer
       openCart();
@@ -291,68 +279,82 @@ function addToCart(productId) {
     });
 }
 
-// Also update the updateCartItemQuantity function to ensure the cart is open:
+// Update cart item quantity
 function updateCartItemQuantity(productId, change) {
-  console.log("Updating quantity:", productId, change);
-
-  const itemIndex = globalCart.findIndex(
-    (item) => item.id === Number.parseInt(productId)
+  console.log(
+    "Updating quantity for product ID:",
+    productId,
+    "Change:",
+    change
   );
 
+  // Convert productId to number to ensure consistent comparison
+  const productIdNum = Number.parseInt(productId, 10);
+  if (isNaN(productIdNum)) {
+    console.error("Invalid product ID:", productId);
+    return;
+  }
+
+  const itemIndex = globalCart.findIndex((item) => item.id === productIdNum);
+
   if (itemIndex === -1) {
-    console.error("Item not found in cart:", productId);
+    console.error("Item not found in cart:", productIdNum);
     return;
   }
 
   globalCart[itemIndex].quantity += change;
+  console.log(
+    `Updated quantity for ${globalCart[itemIndex].name} to ${globalCart[itemIndex].quantity}`
+  );
 
   if (globalCart[itemIndex].quantity <= 0) {
     // Remove item if quantity is 0 or less
+    console.log(
+      `Removing ${globalCart[itemIndex].name} from cart due to zero quantity`
+    );
     globalCart.splice(itemIndex, 1);
-    console.log("Removed item due to zero quantity");
   }
 
   // Save to localStorage
   saveCart();
 
-  // Make sure the cart drawer is open before updating UI
-  const cartDrawer = document.getElementById("cart-drawer");
-  if (cartDrawer && cartDrawer.classList.contains("translate-x-full")) {
-    console.log("Cart drawer is closed, opening it");
-    openCart();
-  } else {
-    // Just update UI if cart is already open
-    updateCartUI();
-  }
+  // Update cart count
+  updateCartCount();
+
+  // Re-render cart items
+  renderCartItems();
 }
 
 // Remove item from cart
 function removeFromCart(productId) {
   console.log("Removing from cart:", productId);
 
-  const itemIndex = globalCart.findIndex(
-    (item) => item.id === Number.parseInt(productId)
-  );
-
-  if (itemIndex === -1) {
-    console.error("Item not found in cart:", productId);
+  // Convert productId to number to ensure consistent comparison
+  const productIdNum = Number.parseInt(productId, 10);
+  if (isNaN(productIdNum)) {
+    console.error("Invalid product ID:", productId);
     return;
   }
 
+  const itemIndex = globalCart.findIndex((item) => item.id === productIdNum);
+
+  if (itemIndex === -1) {
+    console.error("Item not found in cart:", productIdNum);
+    return;
+  }
+
+  const itemName = globalCart[itemIndex].name;
   globalCart.splice(itemIndex, 1);
+  console.log(`Removed ${itemName} from cart`);
 
   // Save to localStorage
   saveCart();
 
-  // Make sure the cart drawer is open before updating UI
-  const cartDrawer = document.getElementById("cart-drawer");
-  if (cartDrawer && cartDrawer.classList.contains("translate-x-full")) {
-    console.log("Cart drawer is closed, opening it");
-    openCart();
-  } else {
-    // Just update UI if cart is already open
-    updateCartUI();
-  }
+  // Update cart count
+  updateCartCount();
+
+  // Re-render cart items
+  renderCartItems();
 }
 
 // Save cart to localStorage
@@ -361,11 +363,8 @@ function saveCart() {
   console.log("Cart saved to localStorage:", globalCart);
 }
 
-// Update cart UI
-function updateCartUI() {
-  console.log("Updating cart UI");
-
-  // Update cart count
+// Update cart count
+function updateCartCount() {
   const cartCount = document.getElementById("cart-count");
   if (cartCount) {
     const totalItems = globalCart.reduce(
@@ -375,28 +374,46 @@ function updateCartUI() {
     cartCount.textContent = totalItems.toString();
     console.log("Updated cart count:", totalItems);
   }
+}
 
-  // Force-find cart elements
-  const cartItemsContainer = document.getElementById("cart-items");
-  const cartTotal = document.getElementById("cart-total");
-  const emptyCartMessage = document.getElementById("empty-cart-message");
-  const checkoutBtn = document.getElementById("checkout-btn");
+// Render cart items
+function renderCartItems() {
+  console.log("Rendering cart items");
 
-  // If we're not on a page with the full cart drawer, return early
-  if (!cartItemsContainer || !cartTotal || !emptyCartMessage || !checkoutBtn) {
-    console.log("Cart drawer elements not found, skipping detailed UI update");
-    return;
-  }
+  // Add a small delay to ensure the DOM is fully updated
+  setTimeout(() => {
+    const cartItemsContainer = document.getElementById("cart-items");
+    const cartTotal = document.getElementById("cart-total");
+    const emptyCartMessage = document.getElementById("empty-cart-message");
+    const checkoutBtn = document.getElementById("checkout-btn");
 
-  console.log("Found cart elements, updating cart UI details");
+    // Check each element individually and log which one is missing
+    if (!cartItemsContainer) console.error("Cart items container not found");
+    if (!cartTotal) console.error("Cart total element not found");
+    if (!emptyCartMessage) console.error("Empty cart message not found");
+    if (!checkoutBtn) console.error("Checkout button not found");
 
-  // Update cart items
-  if (globalCart.length === 0) {
-    emptyCartMessage.classList.remove("hidden");
-    checkoutBtn.disabled = true;
-    cartItemsContainer.innerHTML = "";
-    console.log("Cart is empty, showing empty message");
-  } else {
+    if (
+      !cartItemsContainer ||
+      !cartTotal ||
+      !emptyCartMessage ||
+      !checkoutBtn
+    ) {
+      console.error("Some cart elements are missing, cannot render cart items");
+      return;
+    }
+
+    // Handle empty cart
+    if (globalCart.length === 0) {
+      emptyCartMessage.classList.remove("hidden");
+      checkoutBtn.disabled = true;
+      cartItemsContainer.innerHTML = "";
+      cartTotal.textContent = "$0.00";
+      console.log("Cart is empty");
+      return;
+    }
+
+    // Cart has items
     emptyCartMessage.classList.add("hidden");
     checkoutBtn.disabled = false;
 
@@ -406,12 +423,11 @@ function updateCartUI() {
       0
     );
     cartTotal.textContent = `$${total.toFixed(2)}`;
-    console.log("Updated cart total:", total);
 
     // Clear existing cart items
     cartItemsContainer.innerHTML = "";
 
-    // Render cart items
+    // Add each item to the cart
     globalCart.forEach((item) => {
       const cartItem = document.createElement("div");
       cartItem.className = "cart-item flex items-center gap-4 py-3 border-b";
@@ -422,15 +438,11 @@ function updateCartUI() {
         <div class="flex-grow">
           <h4 class="font-bold">${item.name}</h4>
           <div class="flex items-center mt-1">
-            <button class="cart-item-decrease text-gray-500 hover:text-accent" data-id="${
-              item.id
-            }">
+            <button class="decrease-btn text-gray-500 hover:text-accent">
               <i class="fas fa-minus"></i>
             </button>
             <span class="mx-2">${item.quantity}</span>
-            <button class="cart-item-increase text-gray-500 hover:text-accent" data-id="${
-              item.id
-            }">
+            <button class="increase-btn text-gray-500 hover:text-accent">
               <i class="fas fa-plus"></i>
             </button>
           </div>
@@ -439,18 +451,38 @@ function updateCartUI() {
           <div class="font-bold">$${(item.price * item.quantity).toFixed(
             2
           )}</div>
-          <button class="cart-item-remove text-gray-500 hover:text-red-500 mt-1" data-id="${
-            item.id
-          }">
+          <button class="remove-btn text-gray-500 hover:text-red-500 mt-1">
             <i class="fas fa-trash"></i>
           </button>
         </div>
       `;
+
+      // Add the cart item to the container
       cartItemsContainer.appendChild(cartItem);
+
+      // Add event listeners directly to the buttons
+      const decreaseBtn = cartItem.querySelector(".decrease-btn");
+      const increaseBtn = cartItem.querySelector(".increase-btn");
+      const removeBtn = cartItem.querySelector(".remove-btn");
+
+      decreaseBtn.addEventListener("click", () => {
+        console.log("Decrease button clicked for", item.name);
+        updateCartItemQuantity(item.id, -1);
+      });
+
+      increaseBtn.addEventListener("click", () => {
+        console.log("Increase button clicked for", item.name);
+        updateCartItemQuantity(item.id, 1);
+      });
+
+      removeBtn.addEventListener("click", () => {
+        console.log("Remove button clicked for", item.name);
+        removeFromCart(item.id);
+      });
     });
 
     console.log("Rendered", globalCart.length, "cart items");
-  }
+  }, 50); // Small delay to ensure DOM is ready
 }
 
 // Process checkout with WhatsApp

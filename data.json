@@ -26,7 +26,7 @@
       "salePrice": null,
       "sale": false,
       "featured": true,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "Inspired by flowing water, this coffee table features a glass top that appears to float above a sculptural wooden base with teal accents. A conversation piece that brings artistic flair to any living room.",
       "dimensions": {
         "length": 48,
@@ -44,7 +44,7 @@
       "salePrice": 399.99,
       "sale": true,
       "featured": true,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A versatile side table with overlapping circular forms that create a play of light and shadow. Perfect as a bedside table or accent piece in any room.",
       "dimensions": {
         "length": 20,
@@ -62,7 +62,7 @@
       "salePrice": null,
       "sale": false,
       "featured": false,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A sleek console table with a minimalist design that emphasizes clean lines and negative space. The perfect addition to an entryway or behind a sofa.",
       "dimensions": {
         "length": 60,
@@ -80,7 +80,7 @@
       "salePrice": null,
       "sale": false,
       "featured": false,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A round dining table featuring an intricate mosaic pattern of reclaimed woods. Each piece is unique, creating a one-of-a-kind table that tells a story of sustainability and craftsmanship.",
       "dimensions": {
         "diameter": 60,
@@ -97,7 +97,7 @@
       "salePrice": 649.99,
       "sale": true,
       "featured": false,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A geometric coffee table with faceted sides that reflect light in captivating ways. The glass top provides a clear view of the artistic base below.",
       "dimensions": {
         "length": 42,
@@ -115,7 +115,7 @@
       "salePrice": null,
       "sale": false,
       "featured": false,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A set of three nesting side tables with varying heights and complementary designs. Use them together or separately for flexible, artistic functionality.",
       "dimensions": {
         "large": {
@@ -145,7 +145,7 @@
       "salePrice": 899.99,
       "sale": true,
       "featured": false,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A console table with a base that appears to flow like a ribbon, creating a sense of movement and grace. The marble top adds a touch of luxury to this artistic piece.",
       "dimensions": {
         "length": 54,
@@ -163,7 +163,7 @@
       "salePrice": null,
       "sale": false,
       "featured": false,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "Inspired by forest canopies, this dining table features an intricate base that mimics the branching patterns of trees. The solid wood top provides a sturdy surface for memorable gatherings.",
       "dimensions": {
         "length": 84,
@@ -181,7 +181,7 @@
       "salePrice": null,
       "sale": false,
       "featured": false,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A coffee table with a surface that mimics the gentle ripples of water. The organic form creates a sense of calm and natural beauty in your living space.",
       "dimensions": {
         "length": 50,
@@ -199,7 +199,7 @@
       "salePrice": 349.99,
       "sale": true,
       "featured": false,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A sculptural side table that doubles as a pedestal for displaying art objects. The interplay of materials creates visual interest and versatility.",
       "dimensions": {
         "diameter": 18,
@@ -216,7 +216,7 @@
       "salePrice": null,
       "sale": false,
       "featured": false,
-      "image": "/placeholder.svg?height=300&width=400",
+      "image": "/src/one.jpg?height=300&width=400",
       "description": "A console table with a reflective surface that creates the illusion of depth and space. The minimalist design allows it to complement any interior style.",
       "dimensions": {
         "length": 60,
@@ -231,37 +231,37 @@
     {
       "id": "dining",
       "name": "Dining Tables",
-      "image": "/placeholder.svg?height=200&width=300",
+      "image": "/src/one.jpg?height=200&width=300",
       "description": "Artistic dining tables that serve as the centerpiece for memorable gatherings."
     },
     {
       "id": "coffee",
       "name": "Coffee Tables",
-      "image": "/placeholder.svg?height=200&width=300",
+      "image": "/src/one.jpg?height=200&width=300",
       "description": "Sculptural coffee tables that blend art and functionality in your living space."
     },
     {
       "id": "side",
       "name": "Side Tables",
-      "image": "/placeholder.svg?height=200&width=300",
+      "image": "/src/one.jpg?height=200&width=300",
       "description": "Versatile side tables that add artistic flair to any room."
     },
     {
       "id": "console",
       "name": "Console Tables",
-      "image": "/placeholder.svg?height=200&width=300",
+      "image": "/src/one.jpg?height=200&width=300",
       "description": "Elegant console tables that transform entryways and living spaces."
     },
     {
       "id": "custom",
       "name": "Custom Designs",
-      "image": "/placeholder.svg?height=200&width=300",
+      "image": "/src/one.jpg?height=200&width=300",
       "description": "Bespoke tables crafted to your specifications and unique vision."
     },
     {
       "id": "limited",
       "name": "Limited Editions",
-      "image": "/placeholder.svg?height=200&width=300",
+      "image": "/src/one.jpg?height=200&width=300",
       "description": "Exclusive, limited-run artistic tables for the discerning collector."
     }
   ]
